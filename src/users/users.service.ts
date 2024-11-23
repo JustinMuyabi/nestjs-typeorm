@@ -16,17 +16,17 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  findAll() {
+  findAll(): Promise<User[]> {
     return this.userRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<User> {
     const user: User = await this.getOneUser(id)
     if (user === null) throw new NotFoundException('User not found');
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user: User = await this.getOneUser(id)
     if (user === null) throw new NotFoundException('User not found');
     await this.userRepository.update({id: id}, {...updateUserDto,})
