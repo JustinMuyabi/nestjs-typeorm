@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import {ConfigModule} from "@nestjs/config";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {dataSourceOptions} from "./database/typeorm.config";
-import { UsersModule } from './users/users.module';
-import { MeetingsModule } from './meetings/meetings.module';
+import { UsersModule } from './modules/users/users.module';
+import { MeetingsModule } from './modules/meetings/meetings.module';
 
 @Module({
   imports: [

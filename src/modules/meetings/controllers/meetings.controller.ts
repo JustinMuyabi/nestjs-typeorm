@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { MeetingsService } from './meetings.service';
-import { CreateMeetingDto } from './dto/create-meeting.dto';
-import { UpdateMeetingDto } from './dto/update-meeting.dto';
+import {Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {MeetingsService } from '../services/meetings.service';
+import {CreateMeetingDto } from '../dto/create-meeting.dto';
+import {UpdateMeetingDto } from '../dto/update-meeting.dto';
+import {AddUserToMeetingDto} from "../dto/add-user-to-meeting.dto";
+import {MeetingResponseDto} from "../dto/meeting-response.dto";
 
 @Controller('meetings')
 export class MeetingsController {
@@ -13,7 +15,7 @@ export class MeetingsController {
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<MeetingResponseDto[]> {
     return this.meetingsService.findAll();
   }
 
@@ -30,5 +32,10 @@ export class MeetingsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.meetingsService.remove(+id);
+  }
+
+  @Post(':id/users')
+  addMeetingUser(@Param('id') id: number, @Body() addUserToMeetingDto: AddUserToMeetingDto) {
+    return this.meetingsService.addUserToMeeting(id, addUserToMeetingDto);
   }
 }
