@@ -20,18 +20,13 @@ export class MeetingsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<MeetingResponseDto> {
     return this.meetingsService.findOne(+id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMeetingDto: UpdateMeetingDto) {
     return this.meetingsService.update(+id, updateMeetingDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.meetingsService.remove(+id);
   }
 
   @Post(':id/users')

@@ -25,16 +25,17 @@ export class MeetingsService {
     return meetings.map((meeting: Meeting): MeetingResponseDto => new MeetingResponseDto(meeting));
   }
 
-  findOne(id: number): Promise<Meeting> {
-    return this.getOneMeeting(id);
+  async findOne(id: number): Promise<MeetingResponseDto> {
+    const meeting: Meeting = await this.getOneMeeting(id);
+    if (meeting === null) throw new NotFoundException('Meeting not found');
+    return new MeetingResponseDto(meeting);
   }
 
-  update(id: number, updateMeetingDto: UpdateMeetingDto) {
-    return `This action updates a #${id} meeting`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} meeting`;
+  async update(id: number, updateMeetingDto: UpdateMeetingDto): Promise<Meeting> {
+    const meeting: Meeting = await this.getOneMeeting(id)
+    if (meeting === null) throw new NotFoundException('Meeting not found');
+    await this.meetingRepository.update({id: id}, {...updateMeetingDto,})
+    return await this.getOneMeeting(id);
   }
 
   async addUserToMeeting(
@@ -43,24 +44,24 @@ export class MeetingsService {
   ): Promise<MeetingResponseDto> {
     const meeting: Meeting = await this.meetingRepository.findOne({
       where: { id: id },
-      relations: ['user']
+      relations: ['users']
     });
 
-    if (!meeting) throw new NotFoundException('Meeting not found');
+    if (meeting === null) throw new NotFoundException('Meeting not found');
 
     const user: User = await this.userRepository.findOne({
       where: { id: +addUserToMeetingDto.userId },
     });
 
-    if (!user) throw new NotFoundException('User not found');
+    if (user === null) throw new NotFoundException('User not found');
     if (!meeting.users) meeting.users = [];
 
     meeting.users.push(user);
-    const updatedMeeting = await this.meetingRepository.save(meeting);
+    const updatedMeeting: Meeting = await this.meetingRepository.save(meeting);
     return new MeetingResponseDto(updatedMeeting);
   }
 
   private async getOneMeeting(id: number): Promise<Meeting> | null {
-    return this.meetingRepository.findOne({where: {id: id}})
+    return this.meetingRepository.findOne({where: {id: id}, relations: ['users']})
   }
 }
